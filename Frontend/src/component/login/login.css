@@ -1,0 +1,19 @@
+
+
+.login_container{
+    width: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ 
+}
+.login_middle_container{
+    width: 600px;
+    border: 2px solid black; /* Example border style */
+    padding: 80px
+}
+.login_middle_container h1{
+    margin-bottom: 20px;
+}

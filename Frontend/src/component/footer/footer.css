@@ -1,0 +1,28 @@
+.footer_main_container {
+    background-color: #f2ebeb;
+    padding: 20px;
+    bottom: 0;
+
+
+    overflow-y: hidden;
+
+}
+
+.footer_inner_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 300px;
+    margin-right: 300px;
+}
+
+.footer {
+    overflow: hidden;
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+}
+
+.footer_inner_container anticon:hover {
+    color: #1890ff;
+}
