@@ -1,16 +1,31 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from .models import Post
-from .serializer import PostSerializer
+from .serializer import PostSerializer, PostUpdateSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
+from django.contrib.auth.decorators import login_required
+from rest_framework import authentication
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsOwnerOrReadOnly
 
 
 class PostView(APIView):
     #post create view
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        authentication.TokenAuthentication,
+    ]
+    
+    permission_classes = [IsAuthenticated] 
+    
     def post(self, request):
+        user = request.user
+        request.data['created_by'] = user.id
+        
         serializer = PostSerializer(data=request.data)
+        
         if serializer.is_valid(raise_exception=ValueError):
             serializer.save()
             return Response(
@@ -38,12 +53,21 @@ Post_list_view = PostListAPIView.as_view()
 
 class PostUpdateView(APIView):
     #post update
+    permission_classes = [IsAuthenticated]
+    
     def put(self, request, id):
         post = get_post(id)
         if not post:
             return Response(status=status.HTTP_404_NOT_FOUND)
-    
-        serializer = PostSerializer(post, data=request.data,)
+        
+        
+        if post.created_by != request.user:
+            return Response(
+                {"error": True, "error_msg": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        serializer = PostUpdateSerializer(post, data=request.data,)
     
         if serializer.is_valid(raise_exception = ValueError):
             serializer.save()
@@ -66,6 +90,12 @@ class PostUpdateView(APIView):
                     },
                     status=status.HTTP_404_NOT_FOUND
                 )
+            
+        if post.created_by != request.user:
+            return Response(
+                {"error": True, "error_msg": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN
+            )
         
         post.delete()
         return Response({"success":"post deleted"},
