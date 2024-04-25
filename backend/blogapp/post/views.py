@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from .models import Post
-from .serializer import PostSerializer, PostUpdateSerializer
+from .serializer import PostSerializer, PostUpdateSerializer, PostlistSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
@@ -46,15 +46,34 @@ class PostListAPIView(generics.ListAPIView):
     #list post in order of id
     
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
+    serializer_class = PostlistSerializer
 
 Post_list_view = PostListAPIView.as_view()
 
+class SinglePostView(APIView):
+    def get(self, request, id):
+        print(id)
+        post =  get_post(id)
+        if not post:
+            return Response(
+                    {
+                        "error": True,
+                        "error_msg": "Post not found"
+                    },
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        serializer = PostlistSerializer(post)
+        return Response(serializer.data, 
+                        status=status.HTTP_200_OK)
+        # return Response(
+        #         {"id":post.id,"title": post.title, "content": post.content, "created_at": post.created_at, "created_by":post.created_by},
+        #         status=status.HTTP_200_OK,
+        #     )
+    
 
 class PostUpdateView(APIView):
     #post update
     permission_classes = [IsAuthenticated]
-    
     def put(self, request, id):
         post = get_post(id)
         if not post:
@@ -67,7 +86,7 @@ class PostUpdateView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
             
-        serializer = PostUpdateSerializer(post, data=request.data,)
+        serializer = PostUpdateSerializer(post, data=request.data)
     
         if serializer.is_valid(raise_exception = ValueError):
             serializer.save()

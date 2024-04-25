@@ -12,3 +12,10 @@ class PostUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['title','content','created_at']
+
+class PostlistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id','title','content','created_by','created_at']
+        
+        

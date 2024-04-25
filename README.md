@@ -104,3 +104,17 @@ Run following script to run the backend at specified port (eg: 8000)
 ```
 python manage.py runserver 8000
 ```
+
+## For Frontend
+### Install dependencies
+```
+npm i
+```
+
+### Run the react app
+```
+npm start
+```
+
+## You have a server side application running at localhost:8000 and client side application running at localhost:3000. 
+Try localhost:3000/login for login and get started
